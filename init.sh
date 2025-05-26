@@ -13,7 +13,7 @@ function print_section() {
 # Основные пакеты
 print_section "Установка пакетов"
 sudo apt update -qq
-sudo apt install -qq -y apt-transport-https ca-certificates curl gpg htop vim git zsh
+sudo apt install -qq -y apt-transport-https ca-certificates curl gpg htop vim git zsh unzip
 
 # Kubectl
 print_section "Добавление k8s репы и установка kubectl"
@@ -22,6 +22,34 @@ echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.
 sudo apt update -qq
 sudo apt install -qq -y kubectl
 
+# Установка vault
+print_section "Установка vault"
+if command -v vault &> /dev/null; then
+    echo "✅ Vault установлен. Версия: $(vault --version)"
+else
+    echo "❌ Vault не найден в системе."
+    wget https://mirror.yandex.ru/mirrors/releases.hashicorp.com/vault/1.9.9/vault_1.9.9_linux_amd64.zip -O /tmp/vault.zip
+    sudo rm -rf /tmp/vault
+    unzip /tmp/vault.zip -d /tmp/vault
+    sudo rm -rf /usr/local/bin/vault
+    sudo mv /tmp/vault /usr/local/bin/
+    vault --version
+fi
+
+
+# Установка terraform
+print_section "Установка terraform"
+if command -v terraform &> /dev/null; then
+    echo "✅ Terraform установлен. Версия: $(terraform --version)"
+else
+    echo "❌ Terraform не найден в системе."
+    wget https://mirror.yandex.ru/mirrors/releases.hashicorp.com/terraform/1.9.8/terraform_1.9.8_linux_amd64.zip -O /tmp/terraform.zip
+    sudo rm -rf /tmp/terraform
+    unzip /tmp/terraform.zip -d /tmp/terraform
+    sudo rm -rf /usr/local/bin/terraform
+    sudo mv /tmp/terraform/terraform /usr/local/bin/
+    terraform --version
+fi
 # Ansible
 print_section "Установка ansible"
 sudo apt install -qq -y ansible
